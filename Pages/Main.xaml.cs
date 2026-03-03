@@ -31,7 +31,7 @@ namespace pg_26.Pages
 
         private void Search(object sender, RoutedEventArgs e)
         {
-            MainWindow.mainWindow.frame.Navigate(new Pages.Ticket(from.Text, to.Text, tuda.SelectedDate, obratno.SelectedDate));
+            MainWindow.mainWindow.freme.Navigate(new Pages.Ticket(from.Text, to.Text, tuda.SelectedDate, obratno.SelectedDate));
         }
     }
 }

@@ -24,5 +24,19 @@ namespace pg_26.Elements
         {
             InitializeComponent();
         }
+        public void SetData(string price, string from, string to, DateTime time_start, TimeSpan time_way)
+        {
+            TimeSpan duration = time_way;
+
+            Price.Text = price;
+            From.Text = from;
+            To.Text = to;
+            TimeStart.Text = time_start.ToString("HH:mm");
+            TimeWay.Text = $"Время в пути: {time_way}";
+            DateStart.Text = time_start.ToString("dd MMMM yyyy");
+            string[] ArriveDate = time_start.Add(duration).ToString("dd.MMMM.yyyy HH:mm").Split(' ');
+            TimeArrival.Text = ArriveDate[1];
+            DateEnd.Text = ArriveDate[0].Replace('.', ' ');
+        }
     }
 }
