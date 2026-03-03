@@ -28,6 +28,7 @@
             <DatePicker Grid.Column="1" BorderThickness="0" Margin="0,240,0,-240" x:Name="tuda"/>
             <TextBlock Text="Обратно:" Foreground="White" FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,265,0,0" Height="21" Width="73" Grid.Column="1"/>
             <DatePicker Grid.Column="1" BorderThickness="0" Margin="0,290,0,-290" x:Name="obratno"/>
+            
             <Button Grid.Column="1" IsDefault="True" Click="Search" VerticalAlignment="Top" HorizontalAlignment="Left" Width="100" Margin="226,320,0,0" Content="Найти" Background="Orange" Foreground="White"/>
         </Grid>
     </Grid>
