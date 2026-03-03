@@ -20,6 +20,7 @@ using System.Security.Cryptography;
 
 namespace pg_26
 {
+
     /// <summary>
     /// Логика взаимодействия для MainWindow.xaml
     /// </summary>
