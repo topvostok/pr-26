@@ -6,23 +6,10 @@
              xmlns:local="clr-namespace:pg_26.Elements"
              mc:Ignorable="d" >
 
-    <Border Background="Bisque" 
-            Margin="10" 
-            CornerRadius="12"
-            Padding="15,10"
-            BorderBrush="#E0C8A8"
-            BorderThickness="1">
-
-        <!-- Эффект тени (определяем ресурс, если его нет в общем словаре) -->
+    <Border Background="Bisque" Margin="10"  CornerRadius="12" Padding="15,10" BorderBrush="#E0C8A8"  BorderThickness="1">
         <Border.Resources>
-            <DropShadowEffect x:Key="DropShadowEffect" 
-                              BlurRadius="15" 
-                              Opacity="0.15" 
-                              ShadowDepth="3" 
-                              Direction="315"/>
+            <DropShadowEffect x:Key="DropShadowEffect" BlurRadius="15" Opacity="0.15" ShadowDepth="3" Direction="315"/>
         </Border.Resources>
-
-        <!-- Основная сетка -->
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
@@ -30,27 +17,9 @@
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
-
-            <!-- Колонка 0: Цена и кнопка (Левая часть) -->
-            <StackPanel Grid.Column="0" 
-                        VerticalAlignment="Center" 
-                        Margin="0,0,20,0"
-                        MinWidth="100">
-                <TextBlock x:Name="Price" 
-                           Text="1999 Р" 
-                           FontSize="24" 
-                           FontWeight="Bold" 
-                           Foreground="#D2691E"
-                           HorizontalAlignment="Center"/>
-                <Button Content="Подробнее" 
-                        Foreground="White" 
-                        Background="#D2691E"
-                        BorderThickness="0"
-                        HorizontalAlignment="Center" 
-                        Width="120" 
-                        Height="32"
-                        Margin="0,10,0,0"
-                        Cursor="Hand" Click="Button_Click">
+            <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,20,0" MinWidth="100">
+                <TextBlock x:Name="Price" Text="1999 Р" FontSize="24" FontWeight="Bold" Foreground="#D2691E" HorizontalAlignment="Center"/>
+                <Button Content="Подробнее" Foreground="White" Background="#D2691E" BorderThickness="0" HorizontalAlignment="Center" Width="120" Height="32" Margin="0,10,0,0" Cursor="Hand" Click="Button_Click">
                     <Button.Resources>
                         <Style TargetType="Border">
                             <Setter Property="CornerRadius" Value="6"/>
@@ -59,34 +28,13 @@
                 </Button>
             </StackPanel>
 
-            <!-- Колонка 1: Отправление -->
-            <StackPanel Grid.Column="1" 
-                        VerticalAlignment="Center" 
-                        Margin="0,0,20,0"
-                        MinWidth="80">
-                <TextBlock Text="Pobeda" 
-                           FontSize="14" 
-                           FontWeight="SemiBold"
-                           Foreground="#8B4513"
-                           Margin="0,0,0,5"/>
-                <TextBlock x:Name="TimeStart" 
-                           Text="05:50" 
-                           FontSize="22" 
-                           FontWeight="Bold"
-                           Foreground="#4A2511"/>
-                <TextBlock x:Name="From" 
-                           Text="Пермь" 
-                           FontSize="16"
-                           Foreground="#6B4F3F"
-                           Margin="0,2,0,0"/>
-                <TextBlock x:Name="DateStart" 
-                           Text="29 сент 2021" 
-                           FontSize="12"
-                           Foreground="#8B6B55"
-                           Margin="0,2,0,0"/>
+            <StackPanel Grid.Column="1" VerticalAlignment="Center"  Margin="0,0,20,0" MinWidth="80">
+                <TextBlock Text="Pobeda" FontSize="14" FontWeight="SemiBold" Foreground="#8B4513" Margin="0,0,0,5"/>
+                <TextBlock x:Name="TimeStart"  Text="05:50" FontSize="22" FontWeight="Bold" Foreground="#4A2511"/>
+                <TextBlock x:Name="From" Text="Пермь"  FontSize="16" Foreground="#6B4F3F" Margin="0,2,0,0"/>
+                <TextBlock x:Name="DateStart" Text="29 сент 2021" FontSize="12" Foreground="#8B6B55" Margin="0,2,0,0"/>
             </StackPanel>
 
-            <!-- Колонка 2: Время в пути (Центральная часть) -->
             <Grid Grid.Column="2" 
                   VerticalAlignment="Center"
                   Margin="10,0">
@@ -95,7 +43,6 @@
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
-                <!-- Линия пути -->
                 <Border Grid.RowSpan="2" 
                         Height="2" 
                         Background="#D2691E"
@@ -104,7 +51,6 @@
                         Margin="10,0"
                         Opacity="0.3"/>
 
-                <!-- Текст времени в пути -->
                 <TextBlock x:Name="TimeWay" 
                            Text="В пути 2ч 15м" 
                            Grid.Row="0"
@@ -116,7 +62,6 @@
                            Padding="10,0"
                            Margin="0,-10,0,0"/>
 
-                <!-- Кружок начала -->
                 <Ellipse Grid.Row="1" 
                          Width="8" 
                          Height="8" 
@@ -125,7 +70,6 @@
                          VerticalAlignment="Center"
                          Margin="-4,0,0,0"/>
 
-                <!-- Кружок конца -->
                 <Ellipse Grid.Row="1" 
                          Width="8" 
                          Height="8" 
@@ -135,7 +79,6 @@
                          Margin="0,0,-4,0"/>
             </Grid>
 
-            <!-- Колонка 3: Прибытие -->
             <StackPanel Grid.Column="3" 
                         VerticalAlignment="Center"
                         Margin="20,0,0,0"
