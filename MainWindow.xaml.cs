@@ -22,37 +22,57 @@ namespace pg_26
         {
             ticketsClasses.Clear();
 
-            string connectionString = "server=127.0.0.1;port=3306;uid=root;pwd=;database=Airlines;"; 
+            string connectionString = "server=127.0.0.1;port=3306;uid=root;pwd=;database=Airlines;";
 
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
                 try
                 {
                     connection.Open();
-                    string query = "SELECT price, `from`, `to`, time_start, time_way " +
-                                  "FROM Tickets " +
-                                  "WHERE (`from` = @from AND `to` = @to";
+
+                    // Формируем запрос для поиска билетов "туда"
+                    string query = "";
+
                     if (tuda.HasValue)
                     {
-                        query += " AND DATE(time_start) = @date_tuda";
+                        // Добавляем билеты "туда" (from -> to) на указанную дату
+                        query += "SELECT price, `from`, `to`, time_start, time_way " +
+                                "FROM Tickets " +
+                                $"WHERE `from` = @from AND `to` = @to AND DATE(time_start) = @date_tuda ";
                     }
-                    query += ")";
+
                     if (obratno.HasValue)
                     {
-                        query += " UNION ALL " +
-                                "SELECT price, `from`, `to`, time_start, time_way " +
-                                "FROM Tickets " +
-                                "WHERE (`from` = @to_back AND `to` = @from_back";
-
-                        if (obratno.HasValue)
+                        // Если есть обратные билеты и уже есть запрос, добавляем UNION
+                        if (!string.IsNullOrEmpty(query))
                         {
-                            query += " AND DATE(time_start) = @date_obratno";
+                            query += " UNION ALL ";
                         }
-                        query += ")";
+
+                        // Добавляем билеты "обратно" (to -> from) на указанную дату
+                        query += "SELECT price, `from`, `to`, time_start, time_way " +
+                                "FROM Tickets " +
+                                $"WHERE `from` = @to_back AND `to` = @from_back AND DATE(time_start) = @date_obratno ";
                     }
+
+                    // Если ни одной даты не выбрано, показываем все билеты по направлению
+                    if (!tuda.HasValue && !obratno.HasValue)
+                    {
+                        query = "SELECT price, `from`, `to`, time_start, time_way " +
+                               "FROM Tickets " +
+                               "WHERE (`from` = @from AND `to` = @to) OR (`from` = @to_back AND `to` = @from_back) ";
+                    }
+
+                    // Добавляем сортировку по дате и времени
+                    query += " ORDER BY time_start";
+
                     MySqlCommand command = new MySqlCommand(query, connection);
+
+                    // Добавляем параметры
                     command.Parameters.AddWithValue("@from", from);
                     command.Parameters.AddWithValue("@to", to);
+                    command.Parameters.AddWithValue("@to_back", to);
+                    command.Parameters.AddWithValue("@from_back", from);
 
                     if (tuda.HasValue)
                     {
@@ -61,8 +81,6 @@ namespace pg_26
 
                     if (obratno.HasValue)
                     {
-                        command.Parameters.AddWithValue("@from_back", to);
-                        command.Parameters.AddWithValue("@to_back", from);
                         command.Parameters.AddWithValue("@date_obratno", obratno.Value.ToString("yyyy-MM-dd"));
                     }
 
@@ -70,7 +88,8 @@ namespace pg_26
                     {
                         while (ticket_query.Read())
                         {
-                            decimal price = ticket_query.IsDBNull(0) ? 0 : ticket_query.GetDecimal(0);
+                            decimal price = ticket_query.IsDBNull(0) ? 0m : ticket_query.GetDecimal(0);
+                            string priceString = price.ToString("F2");
                             string fromCity = ticket_query.IsDBNull(1) ? "" : ticket_query.GetString(1);
                             string toCity = ticket_query.IsDBNull(2) ? "" : ticket_query.GetString(2);
 
@@ -109,7 +128,7 @@ namespace pg_26
                 }
                 catch (MySqlException ex)
                 {
-                    MessageBox.Show($"Ошибка подключения к базе данных: {ex.Message}Существует ли база данных Airlines",
+                    MessageBox.Show($"Ошибка подключения к базе данных: {ex.Message}\n\nПроверьте:\n1. Запущен ли MySQL сервер\n2. Правильность строки подключения\n3. Существует ли база данных Airlines",
                         "Ошибка",
                         MessageBoxButton.OK,
                         MessageBoxImage.Error);
