@@ -41,7 +41,7 @@ namespace pg_26.Elements
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show($"Зачем вы нажали? Вы сейчас всё сломаете.");
+
         }
     }
 }

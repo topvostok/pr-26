@@ -6,7 +6,6 @@ using MySql.Data.MySqlClient;
 
 namespace pg_26
 {
-
     public partial class MainWindow : Window
     {
         public static MainWindow mainWindow;
@@ -18,9 +17,17 @@ namespace pg_26
             mainWindow = this;
             freme.Navigate(new Pages.Main());
         }
+
         public List<TicketClass> LoadTickets(string from, string to, DateTime? tuda, DateTime? obratno)
         {
             ticketsClasses.Clear();
+
+            if (string.IsNullOrWhiteSpace(from) || string.IsNullOrWhiteSpace(to))
+            {
+                MessageBox.Show("Укажите города отправления и назначения", "Предупреждение",
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
+                return ticketsClasses;
+            }
 
             string connectionString = "server=127.0.0.1;port=3306;uid=root;pwd=;database=Airlines;";
 
@@ -30,115 +37,86 @@ namespace pg_26
                 {
                     connection.Open();
 
-                    // Формируем запрос для поиска билетов "туда"
-                    string query = "";
+                    var parts = new List<string>();
 
+                    // Билеты ТУДА
                     if (tuda.HasValue)
                     {
-                        // Добавляем билеты "туда" (from -> to) на указанную дату
-                        query += "SELECT price, `from`, `to`, time_start, time_way " +
-                                "FROM Tickets " +
-                                $"WHERE `from` = @from AND `to` = @to AND DATE(time_start) = @date_tuda ";
+                        parts.Add("SELECT price, `from`, `to`, time_start, time_way " +
+                                  "FROM Tickets " +
+                                  "WHERE `from` = @from AND `to` = @to AND DATE(time_start) = @date_tuda");
                     }
 
+                    // Билеты ОБРАТНО — используем @from2 и @to2
                     if (obratno.HasValue)
                     {
-                        // Если есть обратные билеты и уже есть запрос, добавляем UNION
-                        if (!string.IsNullOrEmpty(query))
-                        {
-                            query += " UNION ALL ";
-                        }
-
-                        // Добавляем билеты "обратно" (to -> from) на указанную дату
-                        query += "SELECT price, `from`, `to`, time_start, time_way " +
-                                "FROM Tickets " +
-                                $"WHERE `from` = @to_back AND `to` = @from_back AND DATE(time_start) = @date_obratno ";
+                        parts.Add("SELECT price, `from`, `to`, time_start, time_way " +
+                                  "FROM Tickets " +
+                                  "WHERE `from` = @to2 AND `to` = @from2 AND DATE(time_start) = @date_obratno");
                     }
 
-                    // Если ни одной даты не выбрано, показываем все билеты по направлению
+                    // Если даты не выбраны
                     if (!tuda.HasValue && !obratno.HasValue)
                     {
-                        query = "SELECT price, `from`, `to`, time_start, time_way " +
-                               "FROM Tickets " +
-                               "WHERE (`from` = @from AND `to` = @to) OR (`from` = @to_back AND `to` = @from_back) ";
+                        parts.Add("SELECT price, `from`, `to`, time_start, time_way " +
+                                  "FROM Tickets " +
+                                  "WHERE (`from` = @from AND `to` = @to) OR (`from` = @to AND `to` = @from)");
                     }
 
-                    // Добавляем сортировку по дате и времени
-                    query += " ORDER BY time_start";
+                    string query = string.Join(" UNION ALL ", parts) + " ORDER BY time_start";
 
                     MySqlCommand command = new MySqlCommand(query, connection);
 
-                    // Добавляем параметры
                     command.Parameters.AddWithValue("@from", from);
                     command.Parameters.AddWithValue("@to", to);
-                    command.Parameters.AddWithValue("@to_back", to);
-                    command.Parameters.AddWithValue("@from_back", from);
 
-                    if (tuda.HasValue)
-                    {
-                        command.Parameters.AddWithValue("@date_tuda", tuda.Value.ToString("yyyy-MM-dd"));
-                    }
-
+                    // Отдельные параметры для обратного рейса
                     if (obratno.HasValue)
                     {
+                        command.Parameters.AddWithValue("@from2", from);
+                        command.Parameters.AddWithValue("@to2", to);
                         command.Parameters.AddWithValue("@date_obratno", obratno.Value.ToString("yyyy-MM-dd"));
                     }
 
-                    using (MySqlDataReader ticket_query = command.ExecuteReader())
-                    {
-                        while (ticket_query.Read())
-                        {
-                            decimal price = ticket_query.IsDBNull(0) ? 0m : ticket_query.GetDecimal(0);
-                            string priceString = price.ToString("F2");
-                            string fromCity = ticket_query.IsDBNull(1) ? "" : ticket_query.GetString(1);
-                            string toCity = ticket_query.IsDBNull(2) ? "" : ticket_query.GetString(2);
+                    if (tuda.HasValue)
+                        command.Parameters.AddWithValue("@date_tuda", tuda.Value.ToString("yyyy-MM-dd"));
 
+                    using (MySqlDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            decimal price = reader.IsDBNull(0) ? 0m : reader.GetDecimal(0);
+                            string fromCity = reader.IsDBNull(1) ? "" : reader.GetString(1);
+                            string toCity = reader.IsDBNull(2) ? "" : reader.GetString(2);
                             DateTime timeStart = DateTime.MinValue;
                             TimeSpan timeWay = TimeSpan.Zero;
 
-                            if (!ticket_query.IsDBNull(3))
+                            if (!reader.IsDBNull(3))
                             {
-                                try
-                                {
-                                    timeStart = ticket_query.GetDateTime(3);
-                                }
+                                try { timeStart = reader.GetDateTime(3); }
                                 catch
                                 {
-                                    if (ticket_query.GetFieldType(3) == typeof(TimeSpan))
-                                        timeStart = DateTime.Today.Add(ticket_query.GetTimeSpan(3));
+                                    if (reader.GetFieldType(3) == typeof(TimeSpan))
+                                        timeStart = DateTime.Today.Add(reader.GetTimeSpan(3));
                                 }
                             }
 
-                            if (!ticket_query.IsDBNull(4))
-                            {
-                                timeWay = ticket_query.GetTimeSpan(4);
-                            }
+                            if (!reader.IsDBNull(4))
+                                timeWay = reader.GetTimeSpan(4);
 
-                            TicketClass tickets = new TicketClass(
-                                price,
-                                fromCity,
-                                toCity,
-                                timeStart,
-                                timeWay
-                            );
-
-                            ticketsClasses.Add(tickets);
+                            ticketsClasses.Add(new TicketClass(price, fromCity, toCity, timeStart, timeWay));
                         }
                     }
                 }
                 catch (MySqlException ex)
                 {
-                    MessageBox.Show($"Ошибка подключения к базе данных: {ex.Message}\n\nПроверьте:\n1. Запущен ли MySQL сервер\n2. Правильность строки подключения\n3. Существует ли база данных Airlines",
-                        "Ошибка",
-                        MessageBoxButton.OK,
-                        MessageBoxImage.Error);
+                    MessageBox.Show($"Ошибка подключения к базе данных: {ex.Message}", "Ошибка",
+                        MessageBoxButton.OK, MessageBoxImage.Error);
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Произошла ошибка: {ex.Message}",
-                        "Ошибка",
-                        MessageBoxButton.OK,
-                        MessageBoxImage.Error);
+                    MessageBox.Show($"Произошла ошибка: {ex.Message}", "Ошибка",
+                        MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
 
