@@ -24,11 +24,11 @@ namespace pg_26.Elements
         {
             InitializeComponent();
         }
-        public void SetData(string price, string from, string to, DateTime time_start, TimeSpan time_way)
+        public void SetData(decimal price, string from, string to, DateTime time_start, TimeSpan time_way)
         {
             TimeSpan duration = time_way;
 
-            Price.Text = price;
+            Price.Text = price.ToString();
             From.Text = from;
             To.Text = to;
             TimeStart.Text = time_start.ToString("HH:mm");
@@ -37,6 +37,11 @@ namespace pg_26.Elements
             string[] ArriveDate = time_start.Add(duration).ToString("dd.MMMM.yyyy HH:mm").Split(' ');
             TimeArrival.Text = ArriveDate[1];
             DateEnd.Text = ArriveDate[0].Replace('.', ' ');
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show($"Зачем вы нажали? Вы сейчас всё сломаете.");
         }
     }
 }

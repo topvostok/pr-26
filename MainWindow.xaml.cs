@@ -100,7 +100,7 @@ namespace pg_26
                     {
                         while (ticket_query.Read())
                         {
-                            string price = ticket_query.IsDBNull(0) ? "0" : ticket_query.GetString(0);
+                            decimal price = ticket_query.IsDBNull(0) ? 0 : ticket_query.GetDecimal(0);
                             string fromCity = ticket_query.IsDBNull(1) ? "" : ticket_query.GetString(1);
                             string toCity = ticket_query.IsDBNull(2) ? "" : ticket_query.GetString(2);
 
