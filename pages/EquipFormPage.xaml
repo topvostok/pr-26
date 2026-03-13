@@ -1,0 +1,127 @@
+<Page x:Class="WpfApp1.Pages.EquipFormPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      Background="Transparent">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="24,16,24,20">
+        <StackPanel MaxWidth="720">
+
+            <!-- Header -->
+            <Grid Margin="0,0,0,22">
+                <StackPanel>
+                    <TextBlock x:Name="FormTitle" Text="НОВОЕ СНАРЯЖЕНИЕ"
+                               FontFamily="Segoe UI Black" FontSize="22"
+                               Foreground="#FFF0F4FF" FontWeight="Black"/>
+                    <TextBlock Text="Заполните все обязательные поля"
+                               FontFamily="Segoe UI" FontSize="11"
+                               Foreground="#445DE0FF" Margin="2,3,0,0"/>
+                </StackPanel>
+                <Button Content="← Назад" Style="{StaticResource BtnGhost}"
+                        HorizontalAlignment="Right" VerticalAlignment="Center"
+                        Click="BtnBack_Click"/>
+            </Grid>
+
+            <!-- Card -->
+            <Border Background="#080D1A" CornerRadius="12"
+                    BorderBrush="#1A5DE0FF" BorderThickness="1" Padding="28">
+                <StackPanel>
+
+                    <!-- Row 1 -->
+                    <Grid Margin="0,0,0,20">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="2*"/>
+                            <ColumnDefinition Width="20"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Text="НАЗВАНИЕ *" Style="{StaticResource FieldLabel}"/>
+                            <TextBox x:Name="TbName" Style="{StaticResource RentalTextBox}"/>
+                        </StackPanel>
+                        <StackPanel Grid.Column="2">
+                            <TextBlock Text="БРЕНД *" Style="{StaticResource FieldLabel}"/>
+                            <TextBox x:Name="TbBrand" Style="{StaticResource RentalTextBox}"/>
+                        </StackPanel>
+                    </Grid>
+
+                    <!-- Row 2 -->
+                    <Grid Margin="0,0,0,20">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/><ColumnDefinition Width="20"/><ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Text="КАТЕГОРИЯ *" Style="{StaticResource FieldLabel}"/>
+                            <ComboBox x:Name="CbCategory" Style="{StaticResource RentalCombo}">
+                                <ComboBoxItem Content="Лыжи"/>
+                                <ComboBoxItem Content="Сноуборд"/>
+                                <ComboBoxItem Content="Маска"/>
+                                <ComboBoxItem Content="Шлем"/>
+                                <ComboBoxItem Content="Ботинки"/>
+                                <ComboBoxItem Content="Палки"/>
+                                <ComboBoxItem Content="Комплект"/>
+                            </ComboBox>
+                        </StackPanel>
+                        <StackPanel Grid.Column="2">
+                            <TextBlock Text="СОСТОЯНИЕ *" Style="{StaticResource FieldLabel}"/>
+                            <ComboBox x:Name="CbCondition" Style="{StaticResource RentalCombo}">
+                                <ComboBoxItem Content="Новое"/>
+                                <ComboBoxItem Content="Хорошее"/>
+                                <ComboBoxItem Content="Удовлетворительное"/>
+                                <ComboBoxItem Content="Требует ремонта"/>
+                            </ComboBox>
+                        </StackPanel>
+                    </Grid>
+
+                    <!-- Row 3 -->
+                    <Grid Margin="0,0,0,20">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/><ColumnDefinition Width="20"/>
+                            <ColumnDefinition/><ColumnDefinition Width="20"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Text="РАЗМЕР" Style="{StaticResource FieldLabel}"/>
+                            <TextBox x:Name="TbSize" Style="{StaticResource RentalTextBox}"/>
+                        </StackPanel>
+                        <StackPanel Grid.Column="2">
+                            <TextBlock Text="ЦЕНА/ДЕНЬ ₽ *" Style="{StaticResource FieldLabel}"/>
+                            <TextBox x:Name="TbPrice" Style="{StaticResource RentalTextBox}"/>
+                        </StackPanel>
+                        <StackPanel Grid.Column="4">
+                            <TextBlock Text="НА СКЛАДЕ *" Style="{StaticResource FieldLabel}"/>
+                            <TextBox x:Name="TbStock" Style="{StaticResource RentalTextBox}" Text="1"/>
+                        </StackPanel>
+                    </Grid>
+
+                    <!-- Row 4 -->
+                    <StackPanel Margin="0,0,0,20">
+                        <TextBlock Text="ССЫЛКА НА ФОТО" Style="{StaticResource FieldLabel}"/>
+                        <TextBox x:Name="TbImage" Style="{StaticResource RentalTextBox}"/>
+                    </StackPanel>
+
+                    <!-- Notes -->
+                    <StackPanel Margin="0,0,0,28">
+                        <TextBlock Text="ЗАМЕТКИ" Style="{StaticResource FieldLabel}"/>
+                        <TextBox x:Name="TbNotes" Style="{StaticResource RentalTextBox}"
+                                 Height="80" TextWrapping="Wrap"
+                                 AcceptsReturn="True" VerticalScrollBarVisibility="Auto"/>
+                    </StackPanel>
+
+                    <!-- Buttons -->
+                    <StackPanel Orientation="Horizontal">
+                        <Button x:Name="BtnSave" Content="💾  Сохранить"
+                                Style="{StaticResource BtnCyan}"
+                                Click="BtnSave_Click" Margin="0,0,10,0"/>
+                        <Button Content="Отмена" Style="{StaticResource BtnGhost}"
+                                Click="BtnBack_Click" Margin="0,0,10,0"/>
+                        <Button x:Name="BtnDelete" Content="🗑  Удалить"
+                                Style="{StaticResource BtnRed}"
+                                Visibility="Collapsed"
+                                Click="BtnDelete_Click"/>
+                    </StackPanel>
+
+                </StackPanel>
+            </Border>
+
+        </StackPanel>
+    </ScrollViewer>
+</Page>
