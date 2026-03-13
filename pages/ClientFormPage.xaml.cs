@@ -22,7 +22,7 @@ namespace WpfApp1.Pages
             CbSkill.SelectedIndex = 1;
             if (_id > 0)
             {
-                FormTitle.Text = "Р Р•Р”РђРљРўРР РћР’РђРўР¬ РљР›РР•РќРўРђ";
+                FormTitle.Text = "РЕДАКТИРОВАТЬ КЛИЕНТА"; // Исправлено
                 BtnDelete.Visibility = Visibility.Visible;
                 var cl = ClientRepo.GetById(_id);
                 if (cl == null) return;
@@ -46,7 +46,10 @@ namespace WpfApp1.Pages
         private void BtnSave_Click(object sender, RoutedEventArgs e)
         {
             if (string.IsNullOrWhiteSpace(TbName.Text) || string.IsNullOrWhiteSpace(TbPhone.Text))
-            { MessageBox.Show("Р—Р°РїРѕР»РЅРёС‚Рµ Р¤РРћ Рё С‚РµР»РµС„РѕРЅ.", "РћС€РёР±РєР°"); return; }
+            {
+                MessageBox.Show("Заполните ФИО и телефон.", "Ошибка");
+                return;
+            }
 
             if (!int.TryParse(TbLoyalty.Text, out int pts)) pts = 0;
 
@@ -57,7 +60,7 @@ namespace WpfApp1.Pages
                 Phone = TbPhone.Text.Trim(),
                 Email = TbEmail.Text.Trim(),
                 Passport = TbPassport.Text.Trim(),
-                SkillLevel = (CbSkill.SelectedItem as ComboBoxItem)?.Content?.ToString() ?? "Р›СЋР±РёС‚РµР»СЊ",
+                SkillLevel = (CbSkill.SelectedItem as ComboBoxItem)?.Content?.ToString() ?? "Любитель",
                 BirthDate = DpBirth.SelectedDate,
                 LoyaltyPts = pts,
                 Notes = TbNotes.Text.Trim(),
@@ -70,7 +73,10 @@ namespace WpfApp1.Pages
                 AdminWindow.Instance.GoTo("ClList", AdminWindow.Instance.NavClList);
             }
             catch (Exception ex)
-            { MessageBox.Show("РћС€РёР±РєР°: " + ex.Message, "РћС€РёР±РєР°", MessageBoxButton.OK, MessageBoxImage.Error); }
+            {
+                MessageBox.Show("Ошибка: " + ex.Message, "Ошибка",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void BtnDelete_Click(object sender, RoutedEventArgs e)

@@ -4,12 +4,12 @@
         xmlns:conv="clr-namespace:WpfApp1.Converters"
         Title="ALPINE — Горнолыжный магазин"
         Width="1280" Height="750"
-        MinWidth="1920" MinHeight="1080"
         WindowStyle="None"
         AllowsTransparency="True"
         Background="Transparent"
         ResizeMode="CanResizeWithGrip"
         WindowStartupLocation="CenterScreen"
+        MaxHeight="1080" MaxWidth="1920"
    >
 
     <Window.Resources>

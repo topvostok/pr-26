@@ -113,6 +113,8 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Classes\DatabaseHelper.cs" />
+    <Compile Include="Classes\EquipmentProductModel.cs" />
+    <Compile Include="Classes\EquipmentShopRepository.cs" />
     <Compile Include="Classes\Repositories.cs" />
     <Compile Include="Converters\AccentBrushConverter.cs" />
     <Compile Include="Converters\BoolToVisibilityConverter.cs" />
@@ -122,6 +124,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="pages\AdminWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="pages\CatalogWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -164,6 +170,9 @@
     <Compile Include="Models\SectionModel.cs" />
     <Compile Include="pages\AdminWindow.xaml.cs">
       <DependentUpon>AdminWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="pages\CatalogWindow.xaml.cs">
+      <DependentUpon>CatalogWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="pages\ClientFormPage.xaml.cs">
       <DependentUpon>ClientFormPage.xaml</DependentUpon>

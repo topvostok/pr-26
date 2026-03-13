@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using MySql.Data.MySqlClient;
 using WpfApp1.Models;
-// РЇРІРЅС‹Р№ Р°Р»РёР°СЃ вЂ” СѓСЃС‚СЂР°РЅСЏРµС‚ РєРѕРЅС„Р»РёРєС‚ СЃ MySqlX.XDevAPI.Client
 
 namespace WpfApp1.Classes
 {
@@ -107,9 +106,6 @@ namespace WpfApp1.Classes
         };
     }
 
-    // в•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђ
-    //  CLIENT REPOSITORY
-    // в•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђ
     public static class ClientRepo
     {
         public static List<RentalClient> GetAll(string search = "")

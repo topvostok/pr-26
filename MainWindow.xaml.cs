@@ -8,6 +8,7 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using WpfApp1.Classes;
 using WpfApp1.Models;
 
 namespace WpfApp1
@@ -100,9 +101,9 @@ namespace WpfApp1
         private readonly List<Border> _dots = new List<Border>();
 
         // Segment grids (for click & active tint)
-        private Grid[] _segs;
-        private Rectangle[] _segTints;
-        private Image[] _segImgs;
+        private readonly Grid[] _segs;
+        private readonly Rectangle[] _segTints;
+        private readonly Image[] _segImgs;
 
         // Http client for image loading
         private static readonly HttpClient _http = new HttpClient();
@@ -140,15 +141,13 @@ namespace WpfApp1
         private void OnSizeChanged(object sender, SizeChangedEventArgs e) => PositionCircle();
 
         // ── Circle Positioning ─────────────────────────────────
-        // Place the 1700×1700 circle so only the left portion (~1 quadrant) is visible
         private void PositionCircle()
         {
             double panelW = RightPanel.ActualWidth > 0 ? RightPanel.ActualWidth : 600;
             double panelH = RightPanel.ActualHeight > 0 ? RightPanel.ActualHeight : 750;
 
-            // Place circle: left edge = ~30% from left of right panel, center vertically
             double circleSize = 1700;
-            double leftEdge = panelW * 0.22;  // visible left edge position
+            double leftEdge = panelW * 0.22;
             double centerX = leftEdge + circleSize / 2;
             double centerY = panelH / 2;
 
@@ -194,13 +193,11 @@ namespace WpfApp1
             if (_busy || idx == _current) return;
             _busy = true;
 
-            // Shortest rotation path
             int diff = idx - _current;
             if (diff > 2) diff -= 4;
             if (diff < -2) diff += 4;
             _rotation -= diff * 90.0;
 
-            // Animate spinner
             var rotAnim = new DoubleAnimation
             {
                 To = _rotation,
@@ -209,7 +206,6 @@ namespace WpfApp1
             };
             SpinnerRotate.BeginAnimation(RotateTransform.AngleProperty, rotAnim);
 
-            // Flash transition overlay
             AnimateOverlay(() =>
             {
                 _current = idx;
@@ -225,7 +221,6 @@ namespace WpfApp1
         {
             var sec = _sections[idx];
 
-            // Update accent color on named brushes
             SetBrushColor(AccentBarBrush, sec.AccentColor);
             SetBrushColor(LogoAccentBrush, sec.AccentColor);
             SetBrushColor(LogoDotBrush, sec.AccentColor);
@@ -235,7 +230,6 @@ namespace WpfApp1
             SetBrushColor(HubNumBrush, sec.AccentColor);
             SetBrushColor(CtaBrush, sec.AccentColor);
 
-            // Update accent bar height
             var barAnim = new DoubleAnimation
             {
                 To = RootGrid.ActualHeight * 0.60,
@@ -244,7 +238,6 @@ namespace WpfApp1
             };
             AccentBar.BeginAnimation(FrameworkElement.HeightProperty, barAnim);
 
-            // Text content
             PageTag.Text = sec.Tag;
             TitleLine1.Text = sec.TitleLine1;
             TitleLine2.Text = sec.TitleLine2;
@@ -252,13 +245,10 @@ namespace WpfApp1
             CtaButton.Content = sec.CtaText;
             HubNumber.Text = (idx + 1).ToString("D2");
 
-            // Products
             ProductList.ItemsSource = sec.Products;
 
-            // Background image
             LoadImageAsync(sec.BgImageUrl, bmp =>
             {
-                // cross-fade between BgImage0 and BgImage1
                 if (BgImage0.Opacity > 0.5)
                 {
                     BgImage1.Source = bmp;
@@ -273,7 +263,6 @@ namespace WpfApp1
                 }
             });
 
-            // Animate content in if animated
             if (animate)
             {
                 SlideIn(Title1Transform, 80, 0, 0);
@@ -284,7 +273,6 @@ namespace WpfApp1
             }
             else
             {
-                // instant init
                 Title1Transform.Y = 0;
                 Title2Transform.Y = 0;
                 PageDesc.Opacity = 1;
@@ -320,7 +308,7 @@ namespace WpfApp1
             }
             catch
             {
-                // Silently ignore — show nothing on error
+                // Silently ignore
             }
         }
 
@@ -377,7 +365,6 @@ namespace WpfApp1
         // ── Transition Overlay ─────────────────────────────────
         private void AnimateOverlay(Action onMidpoint)
         {
-            // Fade in
             var fadeIn = new DoubleAnimation
             {
                 To = 1,
@@ -387,7 +374,6 @@ namespace WpfApp1
             {
                 onMidpoint();
 
-                // Fade out
                 var fadeOut = new DoubleAnimation
                 {
                     To = 0,
@@ -471,8 +457,97 @@ namespace WpfApp1
 
         private void CtaButton_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show($"Открываем каталог: {_sections[_current].Tag}", "Alpine Shop",
-                            MessageBoxButton.OK, MessageBoxImage.Information);
+            try
+            {
+                var currentSection = _sections[_current];
+
+                // Определяем категорию для БД
+                string dbCategory;
+                if (currentSection.Tag == "ГОРНЫЕ ЛЫЖИ")
+                    dbCategory = "skis";
+                else if (currentSection.Tag == "СНОУБОРДЫ")
+                    dbCategory = "snowboard";
+                else if (currentSection.Tag == "МАСКИ И ОЧКИ")
+                    dbCategory = "goggles";
+                else if (currentSection.Tag == "ШЛЕМЫ")
+                    dbCategory = "helmets";
+                else
+                    dbCategory = "skis";
+
+                // Проверяем подключение к БД
+                if (!DatabaseHelper.TestConnection(out _))
+                {
+                    var result = MessageBox.Show(
+                        "Не удалось подключиться к базе данных.\n\nХотите открыть демо-режим с тестовыми данными?",
+                        "Ошибка подключения",
+                        MessageBoxButton.YesNo,
+                        MessageBoxImage.Warning);
+
+                    if (result == MessageBoxResult.Yes)
+                    {
+                        OpenDemoCatalog(currentSection);
+                    }
+                    return;
+                }
+
+                // Проверяем, есть ли товары в БД
+                var testProducts = EquipmentShopRepository.GetProductsByCategory(dbCategory);
+                if (testProducts == null || testProducts.Count == 0)
+                {
+                    var result = MessageBox.Show(
+                        $"В базе данных нет товаров для категории \"{currentSection.Tag}\".\n\nХотите открыть демо-режим?",
+                        "Нет данных",
+                        MessageBoxButton.YesNo,
+                        MessageBoxImage.Information);
+
+                    if (result == MessageBoxResult.Yes)
+                    {
+                        OpenDemoCatalog(currentSection);
+                    }
+                    return;
+                }
+
+                // Открываем каталог с данными из БД
+                var catalogWin = new CatalogWindow(
+                    dbCategory,
+                    currentSection.AccentColor,
+                    currentSection.Tag,
+                    currentSection.TitleLine1,
+                    currentSection.TitleLine2,
+                    currentSection.BgImageUrl)
+                {
+                    Owner = this
+                };
+                catalogWin.ShowDialog();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка при открытии каталога: {ex.Message}",
+                    "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void OpenDemoCatalog(SectionModel section)
+        {
+            try
+            {
+                var demoWin = new CatalogWindow(
+                    "demo",
+                    section.AccentColor,
+                    section.Tag + " (ДЕМО)",
+                    section.TitleLine1,
+                    section.TitleLine2,
+                    section.BgImageUrl)
+                {
+                    Owner = this
+                };
+                demoWin.ShowDialog();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка при открытии демо-режима: {ex.Message}",
+                    "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void SearchButton_Click(object sender, RoutedEventArgs e)

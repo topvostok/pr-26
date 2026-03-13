@@ -1,13 +1,8 @@
 ﻿using System;
-using System.Data.SqlClient;
 using MySql.Data.MySqlClient;
 
 namespace WpfApp1.Classes
 {
-    /// <summary>
-    /// Отдельный класс для управления подключением к MySQL.
-    /// Измените ConnectionString под свои настройки сервера.
-    /// </summary>
     public static class DatabaseHelper
     {
         // ───── НАСТРОЙКИ ПОДКЛЮЧЕНИЯ ─────────────────────────────
@@ -15,13 +10,12 @@ namespace WpfApp1.Classes
         private const string Port = "3306";
         private const string Database = "AlpineRental";
         private const string User = "root";
-        private const string Password = "";
+        private const string Password = ""; // ваш пароль, если есть
         // ─────────────────────────────────────────────────────────
 
         public static string ConnectionString =>
             $"server={Server};port={Port};uid={User};pwd={Password};database={Database};charset=utf8mb4;";
 
-        /// <summary>Возвращает открытое соединение. Закрывайте через using.</summary>
         public static MySqlConnection GetConnection()
         {
             var conn = new MySqlConnection(ConnectionString);
@@ -29,7 +23,6 @@ namespace WpfApp1.Classes
             return conn;
         }
 
-        /// <summary>Проверяет доступность базы данных.</summary>
         public static bool TestConnection(out string error)
         {
             error = string.Empty;
