@@ -481,7 +481,6 @@ namespace WpfApp1
                             MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
-        // ── Window Chrome ──────────────────────────────────────
         private void TitleBar_MouseDown(object sender, MouseButtonEventArgs e)
         {
             if (e.ChangedButton == MouseButton.Left) DragMove();
